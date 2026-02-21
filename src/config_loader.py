@@ -10,10 +10,17 @@ class ConfigLoader:
         self.config = self.load_config()
 
     def load_config(self):
+        import yaml
         if not os.path.exists(self.config_path):
             return {}
-        with open(self.config_path, "r") as f:
-            return json.load(f)
+        ext = os.path.splitext(self.config_path)[1].lower()
+        with open(self.config_path, "r", encoding="utf-8") as f:
+            if ext in [".yaml", ".yml"]:
+                return yaml.safe_load(f)
+            elif ext == ".json":
+                return json.load(f)
+            else:
+                raise ValueError(f"Unsupported config file type: {ext}")
 
     def get(self, key, default=None):
         return self.config.get(key, default)
